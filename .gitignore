@@ -1,0 +1,27 @@
+# Author: Pritam Raha <rahapritam32@gmail.com>
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+
+# Terraform local state and downloaded providers never belong in version control.
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform.tfvars
+
+# Operating system and editor files.
+.DS_Store
+.idea/
+.vscode/

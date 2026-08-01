@@ -1,0 +1,115 @@
+# Author: Pritam Raha <rahapritam32@gmail.com>
+name: Quality and Security Fail-Closed Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-security-gate:
+    name: Mandatory quality and security gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository without persisted credentials
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Initialise isolated reports directory
+        run: mkdir -p build/reports build/quarantine
+
+      - name: Detect hardcoded credentials before executing project code
+        run: python3 scripts/detect_secrets.py --output build/reports/secret-scan.json
+
+      - name: Configure Python 3.12
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install pinned validation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
+
+      - name: Audit Python dependencies for known vulnerabilities
+        run: pip-audit --strict --requirement requirements.txt --output build/reports/dependency-audit.json --format json
+
+      - name: Enforce Python formatting
+        run: ruff format --check .
+
+      - name: Enforce Python lint and secure coding rules
+        run: |
+          ruff check . --output-format github
+          bandit -c pyproject.toml -r backend scripts -f json -o build/reports/bandit.json
+
+      - name: Validate application and data contracts
+        run: |
+          python backend/manage.py check --deploy --fail-level WARNING
+          python backend/manage.py test onboarding.tests --verbosity 2
+          python -m unittest discover -s tests -p 'test_*.py' -v
+          python scripts/validate_contracts.py
+          python scripts/demo_fail_closed.py
+
+      - name: Configure Terraform 1.15.5
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.15.5
+          terraform_wrapper: false
+
+      - name: Enforce Terraform formatting and structural validity
+        run: |
+          terraform -chdir=infrastructure fmt -check -recursive
+          terraform -chdir=infrastructure init -backend=false -input=false
+          terraform -chdir=infrastructure validate
+          terraform -chdir=infrastructure test
+
+      - name: Scan Terraform security policy
+        run: checkov --config-file .checkov.yml --output json --output-file-path build/reports/checkov
+
+      - name: Record quarantine evidence on any gate failure
+        if: failure()
+        run: |
+          {
+            echo "BUILD STATUS: QUARANTINED"
+            echo "Workflow: $GITHUB_WORKFLOW"
+            echo "Commit: $GITHUB_SHA"
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "No deployment authorisation was emitted."
+          } > build/quarantine/status.txt
+
+      - name: Upload quarantined reports
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: quarantined-build-${{ github.run_id }}
+          path: |
+            build/quarantine/status.txt
+            build/reports/
+          if-no-files-found: error
+          retention-days: 14
+
+  release-authorisation:
+    name: Emit release authorisation only after every gate passes
+    needs: quality-security-gate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Record immutable release decision
+        run: |
+          echo "RELEASE_AUTHORISED=true"
+          echo "RELEASE_COMMIT=$GITHUB_SHA"
+          echo "Infrastructure apply remains a separately approved production action."

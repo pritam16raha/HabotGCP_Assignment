@@ -1,0 +1,6 @@
+# Author: Pritam Raha <rahapritam32@gmail.com>
+-r requirements.txt
+bandit==1.9.4
+checkov==3.3.8
+pip-audit==2.10.1
+ruff==0.15.22

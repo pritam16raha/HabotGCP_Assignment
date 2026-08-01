@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "submission_id": "2dcd83dc-3fec-4b4b-b7b2-021a10dc8e64",
+  "submitted_at": "2026-07-31T08:30:00Z",
+  "organisation_id": "8147b913-43e7-4a01-8bbe-495f0cda35ce",
+  "student": {
+    "external_id": "STU-DXB-2048",
+    "first_name": "Aarav",
+    "last_name": "Nair",
+    "date_of_birth": "2015-09-16",
+    "emirate": "DUBAI",
+    "school_name": "Dubai Inclusive Learning School",
+    "learning_support_required": true,
+    "has_formal_diagnosis": true,
+    "diagnosis_codes": ["ASD.1"]
+  },
+  "guardian": {
+    "full_name": "Meera Nair",
+    "email": "meera.nair@example.com",
+    "phone_e164": "+971501234567",
+    "relationship": "PARENT",
+    "consent_to_process": true,
+    "consent_timestamp": "2026-07-31T08:29:00Z"
+  },
+  "support": {
+    "areas": ["COMMUNICATION", "SOCIAL_INTERACTION"],
+    "requested_hours_per_week": 12,
+    "preferred_language": "ENGLISH",
+    "wheelchair_access_required": false
+  }
+}

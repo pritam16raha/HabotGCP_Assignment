@@ -1,0 +1,10 @@
+# Author: Pritam Raha <rahapritam32@gmail.com>
+compact: true
+directory:
+  - infrastructure
+download-external-modules: false
+framework:
+  - terraform
+quiet: false
+soft-fail: false
+

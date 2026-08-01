@@ -1,0 +1,4 @@
+# Author: Pritam Raha <rahapritam32@gmail.com>
+Django==6.0.7
+djangorestframework==3.17.1
+

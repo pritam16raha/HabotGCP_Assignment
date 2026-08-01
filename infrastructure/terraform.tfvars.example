@@ -1,0 +1,7 @@
+# Author: Pritam Raha <rahapritam32@gmail.com>
+# Copying this file is optional. Prefer: export TF_VAR_project_id="the-project-you-own"
+project_id            = "habot-staging-pritam-raha-2026"
+region                = "me-central1"
+environment           = "staging"
+raw_retention_seconds = 604800
+
