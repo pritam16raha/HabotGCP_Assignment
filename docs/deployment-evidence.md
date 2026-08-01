@@ -91,3 +91,5 @@ All three use a `7776000s` rotation period (90 days) and reported their next rot
 ## Operational note
 
 These resources are billable and intentionally difficult to destroy. No billing-account-wide budget was created because the billing account is shared with another application; any budget or alert must be scoped explicitly to this project and approved separately. Do not run `terraform destroy`, weaken deletion protection, or remove retention controls merely to simplify cleanup.
+
+When the recruitment process is finished, use `docs/safe-decommission-runbook.md`. It requires preserving evidence, verifying the exact project ID and number, disabling billing only for the assignment project, and then shutting down the dedicated project through a recoverable 30-day deletion request.

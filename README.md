@@ -85,6 +85,8 @@ Before the first command, an authorised platform administrator creates the dedic
 
 The blueprint was deployed and verified end to end on 1 August 2026 in the dedicated `habot-staging-pritam-raha-2026` project. Storage allow-and-deny checks, Pub/Sub schema rejection, BigQuery delivery, row-level filtering, customer-managed encryption, destruction resistance, and a zero-drift Terraform plan all passed. The existing `outloop-email-backend` project was not targeted. See [docs/deployment-evidence.md](docs/deployment-evidence.md) for the recorded results and presentation sequence.
 
+After the recruitment process is complete, follow [docs/safe-decommission-runbook.md](docs/safe-decommission-runbook.md) to preserve evidence, disable billing on the assignment project only, request project shutdown, verify the existing email application remains untouched, and monitor delayed charges. Do not use `terraform destroy` for this protected deployment.
+
 ## Repository guide
 
 ```text
