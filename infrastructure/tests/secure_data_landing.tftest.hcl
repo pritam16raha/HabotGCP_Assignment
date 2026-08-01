@@ -12,9 +12,9 @@ mock_provider "google" {
     }
   }
 
-  mock_resource "google_project_service_identity" {
+  mock_data "google_bigquery_default_service_account" {
     defaults = {
-      email = "service-123456789012@gcp-sa-pubsub.iam.gserviceaccount.com"
+      email = "bq-123456789012@bigquery-encryption.iam.gserviceaccount.com"
     }
   }
 }

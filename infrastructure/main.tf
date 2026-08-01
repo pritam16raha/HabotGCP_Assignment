@@ -38,12 +38,10 @@ resource "google_project_service" "required" {
   disable_on_destroy = false
 }
 
-resource "google_project_service_identity" "bigquery" {
-  provider = google-beta
-  project  = var.project_id
-  service  = "bigquery.googleapis.com"
-
-  depends_on = [google_project_service.required]
+resource "google_project_service" "iam_credentials" {
+  project            = var.project_id
+  service            = "iamcredentials.googleapis.com"
+  disable_on_destroy = false
 }
 
 resource "google_project_service_identity" "pubsub" {
@@ -51,13 +49,19 @@ resource "google_project_service_identity" "pubsub" {
   project  = var.project_id
   service  = "pubsub.googleapis.com"
 
-  depends_on = [google_project_service.required]
+  depends_on = [google_project_service.required["pubsub.googleapis.com"]]
 }
 
 data "google_storage_project_service_account" "current" {
   project = var.project_id
 
-  depends_on = [google_project_service.required]
+  depends_on = [google_project_service.required["storage.googleapis.com"]]
+}
+
+data "google_bigquery_default_service_account" "current" {
+  project = var.project_id
+
+  depends_on = [google_project_service.required["bigquery.googleapis.com"]]
 }
 
 module "secure_data_landing" {
@@ -70,7 +74,7 @@ module "secure_data_landing" {
   labels                         = local.labels
   raw_retention_seconds          = var.raw_retention_seconds
   storage_service_account_email  = data.google_storage_project_service_account.current.email_address
-  bigquery_service_account_email = google_project_service_identity.bigquery.email
+  bigquery_service_account_email = data.google_bigquery_default_service_account.current.email
   pubsub_service_account_email   = google_project_service_identity.pubsub.email
   bigquery_schema_json           = file("${path.root}/../contracts/bigquery/student_onboarding.schema.json")
   pubsub_schema_definition       = file("${path.root}/../contracts/pubsub/student_onboarding.avsc")

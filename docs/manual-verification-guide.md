@@ -176,10 +176,15 @@ Test allowed and denied actions using short-lived impersonated credentials:
 
 ```bash
 export TEST_OBJECT="incoming/manual/student-$(date -u +%Y%m%dT%H%M%SZ).json"
+export TEST_OBJECT_ENCODED="$(jq -rn --arg value "${TEST_OBJECT}" '$value|@uri')"
 
-gcloud storage cp examples/student_onboarding.valid.json \
-  "gs://${RAW_BUCKET}/${TEST_OBJECT}" \
-  --impersonate-service-account="${RAW_INGESTOR}"
+curl --fail-with-body --silent --show-error \
+  --request POST \
+  --header "Authorization: Bearer $(gcloud auth print-access-token --impersonate-service-account="${RAW_INGESTOR}")" \
+  --header "Content-Type: application/json" \
+  --data-binary @examples/student_onboarding.valid.json \
+  --write-out "\nHTTP:%{http_code}\n" \
+  "https://storage.googleapis.com/upload/storage/v1/b/${RAW_BUCKET}/o?uploadType=media&name=${TEST_OBJECT_ENCODED}&ifGenerationMatch=0"
 
 gcloud storage cp examples/student_onboarding.valid.json \
   "gs://${RAW_BUCKET}/quarantine/should-be-denied.json" \
@@ -192,7 +197,7 @@ gcloud storage rm "gs://${RAW_BUCKET}/${TEST_OBJECT}" \
   --impersonate-service-account="${RAW_INGESTOR}"
 ```
 
-The first command must succeed. The other three must return permission denied. Also request the object without authentication; the Hypertext Transfer Protocol response must not be `200`:
+The create-only media upload must return Hypertext Transfer Protocol `200`. It uses an in-memory short-lived impersonated token and the generation precondition prevents overwrite. This direct request is intentional: `gcloud storage cp` may perform a destination-read preflight that is incompatible with a strictly write-only identity. The other three commands must return permission denied. Also request the object without authentication; the Hypertext Transfer Protocol response must not be `200`:
 
 ```bash
 curl --output /dev/null --silent --write-out "%{http_code}\n" \

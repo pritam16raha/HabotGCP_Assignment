@@ -81,6 +81,10 @@ terraform -chdir=infrastructure apply staging.tfplan
 
 Before the first command, an authorised platform administrator creates the dedicated state bucket using the controls in [docs/deployment-runbook.md](docs/deployment-runbook.md). The project identifier shown is a submission-specific example; `project_id` has no default, so Terraform cannot silently target a project.
 
+## Live staging verification
+
+The blueprint was deployed and verified end to end on 1 August 2026 in the dedicated `habot-staging-pritam-raha-2026` project. Storage allow-and-deny checks, Pub/Sub schema rejection, BigQuery delivery, row-level filtering, customer-managed encryption, destruction resistance, and a zero-drift Terraform plan all passed. The existing `outloop-email-backend` project was not targeted. See [docs/deployment-evidence.md](docs/deployment-evidence.md) for the recorded results and presentation sequence.
+
 ## Repository guide
 
 ```text
