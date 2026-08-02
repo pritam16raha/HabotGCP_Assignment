@@ -106,6 +106,20 @@ Reviewer-accessible evidence is kept with the code:
 
 The following operator links require an explicitly authorised Google identity. They are navigation aids, not public proof: [project dashboard](https://console.cloud.google.com/home/dashboard?project=habot-staging-pritam-raha-2026), [Cloud Storage](https://console.cloud.google.com/storage/browser?project=habot-staging-pritam-raha-2026), [BigQuery](https://console.cloud.google.com/bigquery?project=habot-staging-pritam-raha-2026), [Pub/Sub](https://console.cloud.google.com/cloudpubsub/topic/list?project=habot-staging-pritam-raha-2026), and [Cloud Key Management Service](https://console.cloud.google.com/security/kms?project=habot-staging-pritam-raha-2026).
 
+### Captured Google Cloud evidence
+
+These screenshots were captured from the isolated assignment project after the successful deployment. Select an image to open the full-resolution repository copy, or [browse the screenshot evidence folder](docs/GCP/).
+
+| Project identity and active deployment | Protected regional storage buckets |
+|---|---|
+| [![Habot GCP Assignment project dashboard](docs/GCP/Screenshot%20from%202026-08-02%2011-14-47.png)](docs/GCP/Screenshot%20from%202026-08-02%2011-14-47.png) | [![Cloud Storage buckets with uniform access and public access prevention](docs/GCP/Screenshot%20from%202026-08-02%2011-15-10.png)](docs/GCP/Screenshot%20from%202026-08-02%2011-15-10.png) |
+
+| Partitioned BigQuery enforced table | Separate customer-managed encryption keys |
+|---|---|
+| [![BigQuery staged and enforced table schema](docs/GCP/Screenshot%20from%202026-08-02%2011-15-55.png)](docs/GCP/Screenshot%20from%202026-08-02%2011-15-55.png) | [![Cloud KMS keys for raw, staged, and validated data](docs/GCP/Screenshot%20from%202026-08-02%2011-16-43.png)](docs/GCP/Screenshot%20from%202026-08-02%2011-16-43.png) |
+
+Screenshots support the reproducible command and policy evidence; they do not grant access to the live project and contain no credentials, access tokens, service-account keys, or Terraform state.
+
 After the recruitment process is complete, follow [docs/safe-decommission-runbook.md](docs/safe-decommission-runbook.md) to preserve evidence, disable billing on the assignment project only, request project shutdown, verify the existing email application remains untouched, and monitor delayed charges. Do not use `terraform destroy` for this protected deployment.
 
 ## Repository guide
