@@ -83,7 +83,28 @@ Before the first command, an authorised platform administrator creates the dedic
 
 ## Live staging verification
 
-The blueprint was deployed and verified end to end on 1 August 2026 in the dedicated `habot-staging-pritam-raha-2026` project. Storage allow-and-deny checks, Pub/Sub schema rejection, BigQuery delivery, row-level filtering, customer-managed encryption, destruction resistance, and a zero-drift Terraform plan all passed. The existing `outloop-email-backend` project was not targeted. See [docs/deployment-evidence.md](docs/deployment-evidence.md) for the recorded results and presentation sequence.
+The blueprint was deployed and verified end to end on 1 August 2026 in a dedicated, billable staging project. This is supporting evidence, not a dependency for reviewing or reproducing the submitted code.
+
+| Deployment fact | Verified result |
+|---|---|
+| Google Cloud project | `habot-staging-pritam-raha-2026` (`Habot GCP Assignment`), project number `32724954916` |
+| Project lifecycle | Active at the time evidence was captured |
+| Terraform apply and drift | Reviewed create-only plan applied; final detailed-exit-code plan returned `0` (`No changes`) |
+| Cloud Storage | Three regional buckets; public access prevention, uniform access, customer-managed encryption, recovery controls, and access logging verified |
+| Pub/Sub | Schema-bound `student-onboarding-validated-v1` topic encrypted with a customer-managed key; valid events accepted and a wrong-type event rejected |
+| BigQuery | 27-field partitioned and clustered table; customer-managed encryption and two row-access policies verified behaviourally |
+| Cloud Key Management Service | Separate keys for raw storage, staged BigQuery data, and validated events; 90-day rotation configured |
+| Identity and Access Management | Separate workload identities, no service-account key files, and allowed/denied operations tested with short-lived impersonation |
+| Existing application isolation | The reviewed Terraform plan contained zero references to `outloop-email-backend`; that project was not selected or mutated |
+
+Reviewer-accessible evidence is kept with the code:
+
+- [Detailed live deployment results](docs/deployment-evidence.md)
+- [Local, GitHub, and live-cloud verification procedure](docs/manual-verification-guide.md)
+- [Reproducible local validation results](docs/validation-evidence.md)
+- [Terraform implementation](infrastructure/) and [fail-closed GitHub Actions workflow](.github/workflows/quality-security-gate.yml)
+
+The following operator links require an explicitly authorised Google identity. They are navigation aids, not public proof: [project dashboard](https://console.cloud.google.com/home/dashboard?project=habot-staging-pritam-raha-2026), [Cloud Storage](https://console.cloud.google.com/storage/browser?project=habot-staging-pritam-raha-2026), [BigQuery](https://console.cloud.google.com/bigquery?project=habot-staging-pritam-raha-2026), [Pub/Sub](https://console.cloud.google.com/cloudpubsub/topic/list?project=habot-staging-pritam-raha-2026), and [Cloud Key Management Service](https://console.cloud.google.com/security/kms?project=habot-staging-pritam-raha-2026).
 
 After the recruitment process is complete, follow [docs/safe-decommission-runbook.md](docs/safe-decommission-runbook.md) to preserve evidence, disable billing on the assignment project only, request project shutdown, verify the existing email application remains untouched, and monitor delayed charges. Do not use `terraform destroy` for this protected deployment.
 
@@ -116,4 +137,3 @@ submission/              Final presentation and wrapped schema workbook
 - [BigQuery customer-managed encryption keys](https://cloud.google.com/bigquery/docs/customer-managed-encryption)
 - [Terraform Google BigQuery row access policy resource](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_row_access_policy)
 - [GitHub Actions secure use reference](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions)
-# HabotGCP_Assignment

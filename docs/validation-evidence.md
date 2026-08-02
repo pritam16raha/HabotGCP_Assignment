@@ -20,4 +20,4 @@ Evidence captured: 1 August 2026
 | Terraform mocked plan test | Passed: 1 |
 | Checkov infrastructure security scan | Passed: 41; failed: 0; documented terminal-log-bucket skip: 1 |
 
-These results are reproducible with `make validate`. A live `terraform apply` was not run because no employer-owned project or deployment authority was provided; the blueprint validates without changing external infrastructure.
+These local results are reproducible with `make validate` and do not require cloud access. A separate live `terraform apply` was subsequently performed in the author's authorised, isolated staging project; no employer-owned project was used or modified. The cloud results are recorded in [deployment-evidence.md](deployment-evidence.md).
